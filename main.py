@@ -1,33 +1,23 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import os
 import requests
 
 app = Flask(__name__)
 
-# --- Configuration Foundry -----------------------------------
+# --- Configuration Foundry (à personnaliser) -----------------
 FOUNDY_API_URL = "https://projetcondor.usw-3.palantirfoundry.com"
 FUNCTION_RID   = "ri.function-registry.main.function.2ca2a783-4a01-4658-8e3f-3eef704b0a39"
-API_TOKEN      = os.environ.get("FOUNDRY_TOKEN")
+API_TOKEN      = os.environ.get("FOUNDRY_TOKEN")  # injecté via Render
 # -------------------------------------------------------------
 
 @app.route("/", methods=["GET"])
 def home():
-    return '''
-        <!DOCTYPE html>
-        <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <title>Analyse AIP</title>
-        </head>
-        <body>
-            <h2>✅ Serveur actif</h2>
-            <p>Utilisez <code>POST /analyser</code> pour lancer une analyse.</p>
-        </body>
-        </html>
-    ''', 200, {"Content-Type": "text/html; charset=utf-8"}
+    """Affiche l'interface HTML simple."""
+    return render_template("index.html")
 
 @app.route("/analyser", methods=["POST"])
 def analyser():
+    """Relaye la demande à la logique AIP sur Foundry."""
     data = request.get_json(silent=True) or {}
     demande = data.get("demande", "")
     niveau  = data.get("niveauAnalyse", "Normale")
@@ -57,5 +47,6 @@ def analyser():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# --- Lancement local ----------------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8050, debug=True)

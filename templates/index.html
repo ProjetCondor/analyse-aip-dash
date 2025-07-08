@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse AIP Foundry</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        textarea, select, button {
+            width: 100%;
+            padding: 8px;
+            margin: 12px 0;
+            font-size: 1em;
+        }
+        #resultat {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f0f0f0;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Analyse AIP Foundry</h2>
+
+    <form id="analyseForm">
+        <label for="demande">Votre demande :</label>
+        <textarea id="demande" rows="4" placeholder="Ex : Donne une analyse avancée du comportement par âge"></textarea>
+
+        <label for="niveau">Niveau d’analyse :</label>
+        <select id="niveau">
+            <option value="Base">Base</option>
+            <option value="Normale" selected>Normale</option>
+            <option value="Avancée">Avancée</option>
+        </select>
+
+        <button type="submit">Analyser</button>
+    </form>
+
+    <div id="resultat"></div>
+
+    <script>
+        const form = document.getElementById("analyseForm");
+        const resultDiv = document.getElementById("resultat");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            resultDiv.textContent = "Analyse en cours...";
+
+            const payload = {
+                demande: document.getElementById("demande").value,
+                niveauAnalyse: document.getElementById("niveau").value
+            };
+
+            try {
+                const response = await fetch("/analyser", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                resultDiv.textContent = data.resultat || data.error || "Erreur inconnue.";
+            } catch (error) {
+                resultDiv.textContent = "Erreur lors de l’analyse.";
+            }
+        });
+    </script>
+</body>
+</html>
