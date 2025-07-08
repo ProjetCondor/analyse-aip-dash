@@ -36,10 +36,10 @@ def analyser():
 
     try:
         resp = requests.post(
-            f"{FOUNDY_API_URL}/foundry-api/logic-function-execution/execute",
-            json=payload,
-            headers=headers,
-            timeout=90
+    f"{FOUNDY_API_URL}/foundry-api/logic-function-execution/executeSync",
+    json=payload,
+    headers=headers,
+    timeout=90
         )
         if resp.ok:
             return jsonify({"resultat": resp.json().get("output", "Aucune sortie reçue.")}), 200
