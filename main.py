@@ -4,11 +4,11 @@ import requests
 
 app = Flask(__name__)
 
-# --- Configuration Foundry (à personnaliser) -----------------
+# --- Configuration Foundry ------------------------------
 FOUNDY_API_URL = "https://projetcondor.usw-3.palantirfoundry.com"
 FUNCTION_RID   = "ri.function-registry.main.function.2ca2a783-4a01-4658-8e3f-3eef704b0a39"
-API_TOKEN      = os.environ.get("FOUNDRY_TOKEN")  # injecté via Render
-# -------------------------------------------------------------
+API_TOKEN      = os.environ.get("FOUNDRY_TOKEN")  # Injecté via Render
+# --------------------------------------------------------
 
 @app.route("/", methods=["GET"])
 def home():
@@ -23,12 +23,12 @@ def analyser():
     niveau  = data.get("niveauAnalyse", "Normale")
 
     payload = {
-        "functionRid": FUNCTION_RID,
         "inputParams": {
             "demande":        {"value": demande},
             "niveauAnalyse":  {"value": niveau}
         }
     }
+
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",
         "Content-Type":  "application/json"
@@ -36,10 +36,10 @@ def analyser():
 
     try:
         resp = requests.post(
-    f"{FOUNDY_API_URL}/foundry-api/logic-function-execution/executeSync",
-    json=payload,
-    headers=headers,
-    timeout=90
+            f"{FOUNDY_API_URL}/api/functions/{FUNCTION_RID}/invoke",
+            json=payload,
+            headers=headers,
+            timeout=90
         )
         if resp.ok:
             return jsonify({"resultat": resp.json().get("output", "Aucune sortie reçue.")}), 200
